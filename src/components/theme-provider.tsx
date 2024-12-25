@@ -10,8 +10,8 @@ export function ThemeProvider({
 }: React.ComponentProps<typeof NextThemesProvider>) {
   return (
     <NextThemesProvider {...props}>
-      {children}
-      <ModeToggle className='absolute top-6 right-6'   />
+      <div className="min-h-screen">{children}</div>
+      <ModeToggle className="absolute top-6 right-6" />
     </NextThemesProvider>
   );
 }
