@@ -47,6 +47,7 @@ export default function Home() {
   });
 
   function onSubmit(data: Input) {
+    alert(JSON.stringify(data, null, 4));
     console.log(data);
   }
   return (
