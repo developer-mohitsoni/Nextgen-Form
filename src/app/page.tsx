@@ -31,9 +31,15 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import React from "react";
+import { cn } from "@/lib/utils";
+import { ArrowRight } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 type Input = z.infer<typeof registerSchema>;
 export default function Home() {
+  const [formStep, setFormStep] = React.useState(0);
+  const { toast } = useToast();
   const form = useForm<Input>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -47,6 +53,13 @@ export default function Home() {
   });
 
   function onSubmit(data: Input) {
+    if (data.confirmPassword !== data.password) {
+      toast({
+        title: "Password do not match",
+        variant: "destructive"
+      })
+      return
+    }
     alert(JSON.stringify(data, null, 4));
     console.log(data);
   }
@@ -60,120 +73,184 @@ export default function Home() {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Full Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter your name..." {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      This is your public display name.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter your email..." {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="studentId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Student ID</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter your student id..."
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="year"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Year of study</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
+              <div
+                className={cn("space-y-3", {
+                  hidden: formStep === 1,
+                })}
+              >
+                {/* name */}
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Full Name</FormLabel>
                       <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a year of study" />
-                        </SelectTrigger>
+                        <Input placeholder="Enter your name..." {...field} />
                       </FormControl>
-                      <SelectContent>
-                        {[
-                          "B.Tech-I",
-                          "B.Tech-II",
-                          "B.Tech-III",
-                          "B.Tech-IV",
-                        ].map((year) => {
-                          return (
-                            <SelectItem value={year} key={year}>
-                              {year} Year
-                            </SelectItem>
-                          );
-                        })}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter your password..."
-                        {...field}
-                        type="password"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="confirmPassword"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Confirm Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Please confirm your password..."
-                        {...field}
-                        type="password"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button type="submit">Submit</Button>
+                      <FormDescription>
+                        This is your public display name.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                {/* email */}
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter your email..." {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                {/* studentId */}
+                <FormField
+                  control={form.control}
+                  name="studentId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Student ID</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter your student id..."
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                {/* year */}
+                <FormField
+                  control={form.control}
+                  name="year"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Year of study</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a year of study" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {[
+                            "B.Tech-I",
+                            "B.Tech-II",
+                            "B.Tech-III",
+                            "B.Tech-IV",
+                          ].map((year) => {
+                            return (
+                              <SelectItem value={year} key={year}>
+                                {year} Year
+                              </SelectItem>
+                            );
+                          })}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div
+                className={cn("space-y-3", {
+                  hidden: formStep === 0,
+                })}
+              >
+                {/* password */}
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter your password..."
+                          {...field}
+                          type="password"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                {/* confirmPassword */}
+                <FormField
+                  control={form.control}
+                  name="confirmPassword"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Confirm Password</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Please confirm your password..."
+                          {...field}
+                          type="password"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  type="submit"
+                  className={cn({
+                    hidden: formStep === 0,
+                  })}
+                >
+                  Submit
+                </Button>
+                <Button
+                  type="button"
+                  variant={"ghost"}
+                  className={cn({
+                    hidden: formStep === 1,
+                  })}
+                  onClick={() => {
+                    // validation
+                    form.trigger(["name", "email", "studentId", "year"]);
+
+                    const nameState = form.getFieldState("name");
+                    const emailState = form.getFieldState("email");
+                    const idState = form.getFieldState("studentId");
+                    const yearState = form.getFieldState("year");
+
+                    if (!nameState.isDirty || nameState.invalid) return;
+                    if (!emailState.isDirty || emailState.invalid) return;
+                    if (!idState.isDirty || idState.invalid) return;
+                    if (!yearState.isDirty || yearState.invalid) return;
+                    setFormStep(1);
+                  }}
+                >
+                  Next Step
+                  <ArrowRight className="w-4 h-4 mr-2" />
+                </Button>
+                <Button
+                  type="button"
+                  variant={"ghost"}
+                  onClick={() => {
+                    setFormStep(0);
+                  }}
+                  className={cn({
+                    hidden: formStep === 0,
+                  })}
+                >
+                  Go Back
+                </Button>
+              </div>
             </form>
           </Form>
         </CardContent>
