@@ -36,6 +36,8 @@ import { cn } from "@/lib/utils";
 import { ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
+import { motion } from "framer-motion";
+
 type Input = z.infer<typeof registerSchema>;
 export default function Home() {
   const [formStep, setFormStep] = React.useState(0);
@@ -56,9 +58,9 @@ export default function Home() {
     if (data.confirmPassword !== data.password) {
       toast({
         title: "Password do not match",
-        variant: "destructive"
-      })
-      return
+        variant: "destructive",
+      });
+      return;
     }
     alert(JSON.stringify(data, null, 4));
     console.log(data);
@@ -72,11 +74,22 @@ export default function Home() {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
-              <div
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="relative space-y-3 overflow-x-hidden"
+            >
+              <motion.div
                 className={cn("space-y-3", {
-                  hidden: formStep === 1,
+                  // hidden: formStep == 1,
                 })}
+                // formStep == 0 -> translateX == 0
+                // formStep == 1 -> translateX == '-100%'
+                animate={{
+                  translateX: `-${formStep * 100}%`,
+                }}
+                transition={{
+                  ease: "easeInOut",
+                }}
               >
                 {/* name */}
                 <FormField
@@ -84,7 +97,7 @@ export default function Home() {
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Full Name</FormLabel>
+                      <FormLabel>Full name</FormLabel>
                       <FormControl>
                         <Input placeholder="Enter your name..." {...field} />
                       </FormControl>
@@ -109,7 +122,7 @@ export default function Home() {
                     </FormItem>
                   )}
                 />
-                {/* studentId */}
+                {/* student id */}
                 <FormField
                   control={form.control}
                   name="studentId"
@@ -161,11 +174,22 @@ export default function Home() {
                     </FormItem>
                   )}
                 />
-              </div>
-              <div
-                className={cn("space-y-3", {
-                  hidden: formStep === 0,
+              </motion.div>
+              <motion.div
+                className={cn("space-y-3 absolute top-0 left-0 right-0", {
+                  // hidden: formStep == 0,
                 })}
+                // formStep == 0 -> translateX == 100%
+                // formStep == 1 -> translateX == 0
+                animate={{
+                  translateX: `${100 - formStep * 100}%`,
+                }}
+                style={{
+                  translateX: `${100 - formStep * 100}%`,
+                }}
+                transition={{
+                  ease: "easeInOut",
+                }}
               >
                 {/* password */}
                 <FormField
@@ -185,13 +209,13 @@ export default function Home() {
                     </FormItem>
                   )}
                 />
-                {/* confirmPassword */}
+                {/* confirm password */}
                 <FormField
                   control={form.control}
                   name="confirmPassword"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Confirm Password</FormLabel>
+                      <FormLabel>Confirm password</FormLabel>
                       <FormControl>
                         <Input
                           placeholder="Please confirm your password..."
@@ -203,12 +227,12 @@ export default function Home() {
                     </FormItem>
                   )}
                 />
-              </div>
+              </motion.div>
               <div className="flex gap-2">
                 <Button
                   type="submit"
                   className={cn({
-                    hidden: formStep === 0,
+                    hidden: formStep == 0,
                   })}
                 >
                   Submit
@@ -217,26 +241,26 @@ export default function Home() {
                   type="button"
                   variant={"ghost"}
                   className={cn({
-                    hidden: formStep === 1,
+                    hidden: formStep == 1,
                   })}
                   onClick={() => {
                     // validation
-                    form.trigger(["name", "email", "studentId", "year"]);
-
-                    const nameState = form.getFieldState("name");
+                    form.trigger(["email", "name", "year", "studentId"]);
                     const emailState = form.getFieldState("email");
-                    const idState = form.getFieldState("studentId");
+                    const nameState = form.getFieldState("name");
                     const yearState = form.getFieldState("year");
+                    const idState = form.getFieldState("studentId");
 
-                    if (!nameState.isDirty || nameState.invalid) return;
                     if (!emailState.isDirty || emailState.invalid) return;
-                    if (!idState.isDirty || idState.invalid) return;
+                    if (!nameState.isDirty || nameState.invalid) return;
                     if (!yearState.isDirty || yearState.invalid) return;
+                    if (!idState.isDirty || idState.invalid) return;
+
                     setFormStep(1);
                   }}
                 >
                   Next Step
-                  <ArrowRight className="w-4 h-4 mr-2" />
+                  <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
                 <Button
                   type="button"
@@ -245,7 +269,7 @@ export default function Home() {
                     setFormStep(0);
                   }}
                   className={cn({
-                    hidden: formStep === 0,
+                    hidden: formStep == 0,
                   })}
                 >
                   Go Back
